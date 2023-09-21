@@ -1,0 +1,268 @@
+:root {
+  --color-white: hsl(0, 0%, 100%);
+  --shadow-small: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style: none;
+  list-style-type: none;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  font-size: 100%;
+  box-sizing: inherit;
+  scroll-behavior: smooth;
+  height: -webkit-fill-available;
+}
+
+body {
+  font-family: "Rubik", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+body::-webkit-scrollbar{
+  display: none;
+}
+
+.container {
+  max-width: 75rem;
+  height: auto;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+
+  span {
+    display: block;
+  }
+}
+
+
+.logo {
+  height: 70px;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+}
+
+// Header
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  z-index: 10;
+  margin: 0 auto;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-medium);
+}
+
+.navbar {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 4.8rem;
+  margin: 0 auto;
+}
+
+// Search Bar
+.search-bar {
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 5px 10px;
+  box-shadow: var(--shadow-small);
+  transition: background-color 0.3s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 20px;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: none;
+    padding: 0px;
+  }
+}
+
+// Icone
+.search-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.bx-search {
+  display: none;
+}
+
+.back-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+// Mostra l'icona di ricerca solo quando la barra di ricerca è nascosta
+.navbar:not(.search-visible) .search-icon {
+  display: block;
+}
+
+
+.brand {
+  a {
+    column-gap: 1rem;
+    display: flex;
+    align-items: center;
+    color: #1d3563;
+    user-select: none;
+
+    :visited {
+      color: #3f6bbd;
+    }
+
+    :hover {
+      color: #3f6bbd;
+      transition: color 1s;
+    }
+
+    :active {
+      color: #1d3563;
+    }
+  }
+}
+
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.20) !important;
+
+}
+
+  .list-item:last-child {
+    border-bottom: none !important;
+  }
+
+.list-item-content {
+  flex: 1;
+  padding: 10px 10px 10px 0px;
+}
+
+.list-item-actions {
+  display: flex;
+  align-items: center;
+  padding: 0px 0px 0px 10px;
+  border-left: 1px solid rgba(0, 0, 0, 0.20) !important;
+}
+
+
+.action-button {
+  margin-right: 10px; /* Imposta il margine destro tra i pulsanti */
+}
+
+@media (max-width: 768px) {
+
+  .bx-search {
+    display: flex;
+  }
+
+  .navbar {
+    position: relative; // Imposta la posizione relativa sulla navbar
+    justify-content: flex-start; // Allinea gli elementi a sinistra
+  }
+
+  .search-icon {
+    display: flex; // Rendi visibile l'icona di ricerca
+    margin-left: auto; // Sposta l'icona di ricerca a destra
+  }
+
+  .search-bar {
+    position: absolute; // Imposta la posizione assoluta sulla barra di ricerca
+    top: 0; // Posiziona la barra di ricerca all'inizio della navbar
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+    opacity: 0;
+    width: 100%; // Occupa il 100% della larghezza
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 0;
+    border: 0;
+  }
+
+  .search-bar.visible {
+    // Rendi visibile la barra di ricerca solo su dispositivi mobili
+    transform: translateX(0%);
+    opacity: 1;
+  }
+
+  .back-icon {
+    // Aggiungi la transizione solo su dispositivi mobili
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+    display: flex;
+    align-items: center;
+  }
+
+  .search-bar.visible .back-icon {
+    // Rendi visibile l'icona "Indietro" solo su dispositivi mobili
+    transform: translateX(0%);
+    padding: 10px;
+  }
+
+  .content{
+    margin-top: 3rem !important;
+  }
+
+  .brand-name{
+    font-size: 10px !important;
+  }
+  
+
+  .logo {
+    height: 50px;
+    pointer-events: none;
+    -webkit-touch-callout: none;
+  }
+  
+  .navbar {
+    width: 100%;
+    height: 3.8rem;
+    margin: 0 auto;
+  }
+
+  .list-item-actions {
+    border-left: none !important;
+  }
+  
+}
+

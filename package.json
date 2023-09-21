@@ -1,0 +1,50 @@
+{
+  "name": "circolari",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@fortawesome/fontawesome-free": "^6.4.2",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "antd": "^5.9.0",
+    "axios": "^1.5.0",
+    "boxicons": "^2.1.4",
+    "cheerio": "^1.0.0-rc.12",
+    "exec-php": "^0.0.6",
+    "express": "^4.18.2",
+    "font-awesome": "^4.7.0",
+    "fs": "^0.0.1-security",
+    "js-cookie": "^3.0.5",
+    "js-file-download": "^0.4.12",
+    "moment": "^2.29.4",
+    "node-fetch": "^3.3.2",
+    "node-html-parser": "^6.1.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-image": "^4.1.0",
+    "use-media-antd-query": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.4",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "sass": "^1.66.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
