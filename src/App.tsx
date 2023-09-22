@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import Navbar from './Navbar';
 import Tabella from './Tabella';
 import Notifica from './Notifica';
@@ -34,12 +34,13 @@ function App() {
         </Content>
         <FloatButton.BackTop
           style={{
-            width: '50px',
-            height: '50px',
+            width: '55px',
+            height: '55px',
             position: 'fixed',
             bottom: '10px',
-            right: '10px',
+            right: '80px',
             border: '1px solid rgba(0, 0, 0, 0.10)',
+            transition: 'opacity 0.3s ease-in-out'
           }}
         />
       </Layout>

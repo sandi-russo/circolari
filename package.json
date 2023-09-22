@@ -15,6 +15,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@types/styled-components": "^5.1.27",
     "antd": "^5.9.0",
     "axios": "^1.5.0",
     "boxicons": "^2.1.4",
@@ -31,6 +32,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image": "^4.1.0",
+    "styled-components": "^6.0.8",
     "use-media-antd-query": "^1.1.0"
   },
   "devDependencies": {
