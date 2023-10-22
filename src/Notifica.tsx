@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { notification, Space, Button, Modal, QRCode, FloatButton } from 'antd';
 import logo from './assets/Logo.png';
+import './style.scss';
 
 const close = () => {
   console.log(
@@ -125,16 +126,21 @@ const App: React.FC = () => {
   return (
     <>
       {contextHolder}
-      <Modal
-        title="Collegati al nostro Bot Telegram" style={{ textAlign: 'center' }}
-        open={modalContent !== null}
-        onOk={() => setModalContent(null)}
-        onCancel={() => setModalContent(null)}
-        centered
-        footer={null}
-      >
-        {modalContent}
-      </Modal>
+      {modalContent && (
+      <div className="modal-container">
+        <Modal
+          title="Collegati al nostro Bot Telegram"
+          style={{ textAlign: 'center' }}
+          visible={modalContent !== null} // Usa true per renderlo sempre visibile
+          onOk={() => setModalContent(null)}
+          onCancel={() => setModalContent(null)}
+          centered
+          footer={null}
+        >
+          {modalContent}
+        </Modal>
+      </div>
+    )}
       <FloatButton
         style={{
           width: '55px',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List, Button, Empty, Spin } from 'antd';
+import { List, Button, Empty, Spin, Modal } from 'antd';
 import { DownloadOutlined, EyeOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Segmented } from 'antd';
 import './style.scss';
@@ -46,6 +46,10 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [ascendingOrder, setAscendingOrder] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfNumero, setPdfNumero] = useState('');
+  
 
   useEffect(() => {
     setIsMobile(window.innerWidth <= 767);
@@ -93,6 +97,12 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
     return ascendingOrder ? numeroA - numeroB : numeroB - numeroA;
   });
 
+  function visualizzaPDF(url: string, numero: string) {
+    setPdfUrl(url);
+    setPdfNumero(numero);
+    setModalVisible(true);
+  }
+
   function scaricaPDF(url: string) {
     const link = document.createElement('a');
     link.href = 'https://vtmod.altervista.org/ParserCircolari/scaricatore.php?nome=' + url;
@@ -102,9 +112,27 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
 
   return (
     <div>
+    <div className={modalVisible ? 'popup-background active' : 'popup-background'}>
+      {/* Contenuto sfocato */}
+    </div>
+
+    <div className='popup-circolare'>
+      <Modal
+        title={`Circolare numero: ${pdfNumero}`}
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+        width="40%"
+        destroyOnClose
+        centered
+      >
+        <iframe src={pdfUrl} width="100%" height="650px" frameBorder="0"></iframe>
+      </Modal>
+    </div>
+      
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <SegmentedComponent ascendingOrder={ascendingOrder} toggleOrder={setAscendingOrder} />
-        </div>
+      </div>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
           <Spin size="large" />
@@ -129,9 +157,7 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
                 <div className="list-item-actions">
                   <Button
                     icon={<EyeOutlined />}
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={() => visualizzaPDF(item.link, item.numero)}
                     className={`action-button ${isMobile ? 'hidden' : ''}`}
                     style={{ display: isMobile ? 'none' : 'inline-block' }}
                   >
@@ -144,9 +170,13 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
               </List.Item>
             )}
           />
-        )
+        )   
       )}
-    </div>
+
+
+      </div>
+    
+    
   );
 };
 
