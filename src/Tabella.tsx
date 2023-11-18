@@ -15,7 +15,7 @@ interface TabellaProps {
   searchQuery: string;
 }
 
-const SegmentedComponent: React.FC<{ ascendingOrder: boolean; toggleOrder: (newOrder: boolean) => void }> = ({
+const SegmentedComponent: React.FC<{ ascendingOrder: boolean; toggleOrder: () => void }> = ({
   ascendingOrder,
   toggleOrder,
 }) => (
@@ -31,25 +31,26 @@ const SegmentedComponent: React.FC<{ ascendingOrder: boolean; toggleOrder: (newO
         value: 'Ascending',
         icon: <ArrowUpOutlined />,
       },
-      
     ]}
+    value={ascendingOrder ? 'Ascending' : 'Descending'}
     onChange={(value) => {
       if (value === 'Ascending' || value === 'Descending') {
-        toggleOrder(!ascendingOrder);
+        toggleOrder();
       }
     }}
   />
 );
 
+
 const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
   const [data, setData] = useState<DataItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [ascendingOrder, setAscendingOrder] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const [pdfNumero, setPdfNumero] = useState('');
-  
+  const [sortingLoading, setSortingLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     setIsMobile(window.innerWidth <= 767);
@@ -68,6 +69,8 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setInitialLoading(true);
+
         const response = await fetch('https://vtmod.altervista.org/ParserCircolari/Export.php');
         if (response.ok) {
           const responseData = await response.json();
@@ -78,12 +81,25 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
       } catch (error) {
         console.error('Errore durante il recupero dei dati:', error);
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  const handleToggleOrder = async () => {
+    if (!sortingLoading) {
+      setSortingLoading(true);
+  
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+      setSortingLoading(false);
+      setAscendingOrder(!ascendingOrder);
+    }
+  };
+  
+
 
   const filteredData = data.filter((item) => {
     const { numero, link, descrizione, data } = item;
@@ -110,74 +126,92 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
     link.click();
   }
 
-  return (
-    <div>
-    <div className={modalVisible ? 'popup-background active' : 'popup-background'}>
-      {/* Contenuto sfocato */}
-    </div>
+const centerLoadingStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  zIndex: 9999,
+};
 
-    <div className='popup-circolare'>
-      <Modal
-        title={`Circolare numero: ${pdfNumero}`}
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={null}
-        width="40%"
-        destroyOnClose
-        centered
-      >
-        <iframe src={pdfUrl} width="100%" height="650px" frameBorder="0"></iframe>
-      </Modal>
-    </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <SegmentedComponent ascendingOrder={ascendingOrder} toggleOrder={setAscendingOrder} />
+return (
+  <div>
+    {initialLoading && (
+      <div style={centerLoadingStyle}>
+        <Spin spinning={initialLoading} size="large" />
       </div>
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-          <Spin size="large" />
+    )}
+
+
+
+    {!initialLoading && (
+      <div>
+        <div className={modalVisible ? 'popup-background active' : 'popup-background'}>
+          {/* Contenuto sfocato */}
         </div>
-      ) : (
-        sortedData.length === 0 ? (
+
+        <div className='popup-circolare'>
+          <Modal
+            title={<p>Circolare numero: <b>{pdfNumero}</b></p>}
+            visible={modalVisible}
+            onCancel={() => setModalVisible(false)}
+            footer={null}
+            width="75%"
+            destroyOnClose
+            centered
+          >
+            <iframe src={pdfUrl} width="100%" height="650px" frameBorder="0"></iframe>
+          </Modal>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <SegmentedComponent ascendingOrder={ascendingOrder} toggleOrder={handleToggleOrder} />
+        </div>
+
+        {sortingLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-            <Empty description="Nessuna circolare trovata!" imageStyle={{ height: 80 }} />
+            <Spin spinning={sortingLoading} size="large" />
           </div>
         ) : (
-          <List
-            dataSource={sortedData}
-            renderItem={(item) => (
-              <List.Item key={item.numero} className="list-item">
-                <div className="list-item-content">
-                  <List.Item.Meta
-                    title={<a href={item.link} target="_blank" rel="noopener noreferrer">{`Circolare ${item.numero}`}</a>}
-                    description={item.descrizione}
-                  />
-                  {`Data: ${item.data}`}
-                </div>
-                <div className="list-item-actions">
-                  <Button
-                    icon={<EyeOutlined />}
-                    onClick={() => visualizzaPDF(item.link, item.numero)}
-                    className={`action-button ${isMobile ? 'hidden' : ''}`}
-                    style={{ display: isMobile ? 'none' : 'inline-block' }}
-                  >
-                    <span>Visualizza</span>
-                  </Button>
-                  <Button icon={<DownloadOutlined />} onClick={() => scaricaPDF(item.numero)} className="action-button">
-                    {isMobile ? null : <span>Scarica</span>}
-                  </Button>
-                </div>
-              </List.Item>
-            )}
-          />
-        )   
-      )}
-
-
+          sortedData.length === 0 ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
+              <Empty description={<p><b>Nessuna circolare trovata!</b></p>} imageStyle={{ height: 80 }} />
+            </div>
+          ) : (
+            <List
+              dataSource={sortedData}
+              renderItem={(item) => (
+                <List.Item key={item.numero} className="list-item">
+                  <div className="list-item-content">
+                    <List.Item.Meta
+                      title={<a href={item.link} target="_blank" rel="noopener noreferrer">{`Circolare ${item.numero}`}</a>}
+                      description={item.descrizione}
+                    />
+                    {`Data: ${item.data}`}
+                  </div>
+                  <div className="list-item-actions">
+                    <Button
+                      icon={<EyeOutlined />}
+                      onClick={() => visualizzaPDF(item.link, item.numero)}
+                      className={`action-button ${isMobile ? 'hidden' : ''}`}
+                      style={{ display: isMobile ? 'none' : 'inline-block' }}
+                    >
+                      <span>Visualizza</span>
+                    </Button>
+                    <Button icon={<DownloadOutlined />} onClick={() => scaricaPDF(item.numero)} className="action-button">
+                      {isMobile ? null : <span>Scarica</span>}
+                    </Button>
+                  </div>
+                </List.Item>
+              )}
+            />
+          )
+        )}
       </div>
-    
-    
-  );
+    )}
+  </div>
+);
+
 };
 
 export default Tabella;

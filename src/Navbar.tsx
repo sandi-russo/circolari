@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import './style.scss';
 import { Img } from 'react-image';
 import logo from './assets/Logo.png';
+import _ from 'lodash';
 
 type NavbarProps = {
   onSearch: (query: string) => void;
@@ -12,15 +13,13 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
   const [isSearchBarVisible, setSearchBarVisible] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+  // Utilizza _.debounce con un ritardo di 300 ms
+  const handleSearchChange = _.debounce((query: string) => {
     onSearch(query);
-  };
+  }, 500);
 
   const handleSearchIconClick = () => {
     setSearchBarVisible(true);
-    // Attiva l'input di ricerca quando si preme sull'icona di ricerca
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
@@ -57,8 +56,11 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch }) => {
             type="text"
             placeholder="Cerca circolari..."
             value={searchQuery}
-            onChange={handleSearchChange}
-            ref={searchInputRef} // Aggiungi il riferimento all'input
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              handleSearchChange(e.target.value);
+            }}
+            ref={searchInputRef}
           />
           <div className="back-icon" onClick={handleBackIconClick}>
             <i className="bx bx-arrow-back"></i>
