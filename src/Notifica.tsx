@@ -43,7 +43,7 @@ const App: React.FC = () => {
                 );
               } else {
                 setModalContent(
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',  }}>
                     <QRCode value="https://t.me/VERONATRENTOBOT" icon={logo} />
                     <Button
                       type="default"
@@ -130,12 +130,13 @@ const App: React.FC = () => {
       <div className="modal-container">
         <Modal
           title="Collegati al nostro Bot Telegram"
-          style={{ textAlign: 'center' }}
-          visible={modalContent !== null} // Usa true per renderlo sempre visibile
+          style={{ textAlign: 'center', top: '75px' }}
+        
           onOk={() => setModalContent(null)}
           onCancel={() => setModalContent(null)}
           centered
           footer={null}
+          zIndex={5}
         >
           {modalContent}
         </Modal>

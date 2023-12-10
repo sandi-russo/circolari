@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { List, Button, Empty, Spin, Modal } from 'antd';
+import { List, Button, Empty, Spin, Segmented } from 'antd';
 import { DownloadOutlined, EyeOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-import { Segmented } from 'antd';
-import './style.scss';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+
 
 interface DataItem {
   numero: string;
@@ -13,6 +13,7 @@ interface DataItem {
 
 interface TabellaProps {
   searchQuery: string;
+  setPdfUrl: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const SegmentedComponent: React.FC<{ ascendingOrder: boolean; toggleOrder: () => void }> = ({
@@ -41,14 +42,10 @@ const SegmentedComponent: React.FC<{ ascendingOrder: boolean; toggleOrder: () =>
   />
 );
 
-
-const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
+const Tabella: React.FC<TabellaProps> = ({ searchQuery, setPdfUrl  }) => {
   const [data, setData] = useState<DataItem[]>([]);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [ascendingOrder, setAscendingOrder] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [pdfNumero, setPdfNumero] = useState('');
   const [sortingLoading, setSortingLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -91,15 +88,13 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
   const handleToggleOrder = async () => {
     if (!sortingLoading) {
       setSortingLoading(true);
-  
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
-  
+
       setSortingLoading(false);
       setAscendingOrder(!ascendingOrder);
     }
   };
-  
-
 
   const filteredData = data.filter((item) => {
     const { numero, link, descrizione, data } = item;
@@ -113,12 +108,6 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
     return ascendingOrder ? numeroA - numeroB : numeroB - numeroA;
   });
 
-  function visualizzaPDF(url: string, numero: string) {
-    setPdfUrl(url);
-    setPdfNumero(numero);
-    setModalVisible(true);
-  }
-
   function scaricaPDF(url: string) {
     const link = document.createElement('a');
     link.href = 'https://vtmod.altervista.org/ParserCircolari/scaricatore.php?nome=' + url;
@@ -126,92 +115,63 @@ const Tabella: React.FC<TabellaProps> = ({ searchQuery }) => {
     link.click();
   }
 
-const centerLoadingStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  zIndex: 9999,
-};
-
-return (
-  <div>
-    {initialLoading && (
-      <div style={centerLoadingStyle}>
-        <Spin spinning={initialLoading} size="large" />
-      </div>
-    )}
-
-
-
-    {!initialLoading && (
-      <div>
-        <div className={modalVisible ? 'popup-background active' : 'popup-background'}>
-          {/* Contenuto sfocato */}
+  return (
+    <div>
+      {initialLoading && (
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+          <Spin spinning={initialLoading} size="large" />
         </div>
+      )}
 
-        <div className='popup-circolare'>
-          <Modal
-            title={<p>Circolare numero: <b>{pdfNumero}</b></p>}
-            visible={modalVisible}
-            onCancel={() => setModalVisible(false)}
-            footer={null}
-            width="75%"
-            destroyOnClose
-            centered
-          >
-            <iframe src={pdfUrl} width="100%" height="650px" frameBorder="0"></iframe>
-          </Modal>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <SegmentedComponent ascendingOrder={ascendingOrder} toggleOrder={handleToggleOrder} />
-        </div>
-
-        {sortingLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-            <Spin spinning={sortingLoading} size="large" />
+      {!initialLoading && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <SegmentedComponent ascendingOrder={ascendingOrder} toggleOrder={handleToggleOrder} />
           </div>
-        ) : (
-          sortedData.length === 0 ? (
+
+          {sortingLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-              <Empty description={<p><b>Nessuna circolare trovata!</b></p>} imageStyle={{ height: 80 }} />
+              <Spin spinning={sortingLoading} size="large" />
             </div>
           ) : (
-            <List
-              dataSource={sortedData}
-              renderItem={(item) => (
-                <List.Item key={item.numero} className="list-item">
-                  <div className="list-item-content">
-                    <List.Item.Meta
-                      title={<a href={item.link} target="_blank" rel="noopener noreferrer">{`Circolare ${item.numero}`}</a>}
-                      description={item.descrizione}
-                    />
-                    {`Data: ${item.data}`}
-                  </div>
-                  <div className="list-item-actions">
-                    <Button
-                      icon={<EyeOutlined />}
-                      onClick={() => visualizzaPDF(item.link, item.numero)}
-                      className={`action-button ${isMobile ? 'hidden' : ''}`}
-                      style={{ display: isMobile ? 'none' : 'inline-block' }}
-                    >
-                      <span>Visualizza</span>
-                    </Button>
-                    <Button icon={<DownloadOutlined />} onClick={() => scaricaPDF(item.numero)} className="action-button">
-                      {isMobile ? null : <span>Scarica</span>}
-                    </Button>
-                  </div>
-                </List.Item>
-              )}
-            />
-          )
-        )}
-      </div>
-    )}
-  </div>
-);
-
+            sortedData.length === 0 ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
+                <Empty description={<p><b>Nessuna circolare trovata!</b></p>} imageStyle={{ height: 80 }} />
+              </div>
+            ) : (
+              <List
+                dataSource={sortedData}
+                renderItem={(item) => (
+                  <List.Item key={item.numero} className="list-item">
+                    <div className="list-item-content">
+                      <List.Item.Meta
+                        title={<a href={item.link} target="_blank" rel="noopener noreferrer">{`Circolare ${item.numero}`}</a>}
+                        description={item.descrizione}
+                      />
+                      {`Data: ${item.data}`}
+                    </div>
+                    <div className="list-item-actions">
+                      <Button
+                        icon={<EyeOutlined />}
+                        onClick={() => setPdfUrl(`https://vtmod.altervista.org/ParserCircolari/visualizzatore.php?nome=${item.numero}`)}
+                        className={`action-button ${isMobile ? 'hidden' : ''}`}
+                        style={{ display: isMobile ? 'none' : 'inline-block' }}
+                      >
+                        <span>Visualizza</span>
+                      </Button>
+                      <Button icon={<DownloadOutlined />} onClick={() => scaricaPDF(item.numero)} className="action-button">
+                        {isMobile ? null : <span>Scarica</span>}
+                      </Button>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Tabella;
