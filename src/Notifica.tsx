@@ -19,69 +19,63 @@ const App: React.FC = () => {
     const isMobile = window.innerWidth <= 768;
 
     const btn = (
-      <Space>
-        <Button
-          type="default"
-          size="small"
-          onClick={() => {
-            api.destroy();
-            setTimeout(() => {
-              if (isMobile) {
-                setModalContent(
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <a
-                      href="https://t.me/VERONATRENTOBOT"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button type="default" style={{ border: '1px solid #0088cc', display: 'flex', alignItems: 'center' }}>
-                        <i className='bx bxl-telegram' style={{ marginRight: '5px', fontSize: '24px' }}></i>
-                        Apri Telegram
-                      </Button>
-                    </a>
-                  </div>
-                );
-              } else {
-                setModalContent(
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <QRCode value="https://t.me/VERONATRENTOBOT" icon={logo} />
-                    <Button
-                      type="default"
-                      style={{ marginTop: '10px', border: '1px solid #0088cc', display: 'flex', alignItems: 'center' }}
-                      onClick={() => {
-                        window.open('https://t.me/VERONATRENTOBOT', '_blank');
-                        setModalContent(null);
-                      }}
-                    >
-                      <i className='bx bxl-telegram' style={{ marginRight: '5px', fontSize: '24px' }}></i>
-                      Apri Telegram
-                    </Button>
-                  </div>
-                );
-              }
-            }, 500);
-          }}
-        >
-          {isMobile ? 'Mostra Bottone' : 'Mostra QR Code'}
-        </Button>
-        <Button
-          type="default"
-          size="small"
-          onClick={() => {
-            api.destroy(key);
-            localStorage.setItem('showNotification', 'false');
-          }}
-        >
-          Non visualizzare più
-        </Button>
-        <Button
-          type="primary"
-          size="small"
-          onClick={() => api.destroy(key)}
-        >
-          Chiudi
-        </Button>
-      </Space>
+<Space style={{ display: 'flex', justifyContent: 'right' }}>
+  <Button
+    type="primary"
+    size="small"
+    onClick={() => {
+      api.destroy();
+      setTimeout(() => {
+        if (isMobile) {
+          setModalContent(
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <a
+                href="https://t.me/VERONATRENTOBOT"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button type="primary" style={{ border: '1px solid #0088cc', display: 'flex', alignItems: 'center' }}>
+                  <i className='bx bxl-telegram' style={{ marginRight: '5px', fontSize: '24px' }}></i>
+                  Apri Telegram
+                </Button>
+              </a>
+            </div>
+          );
+        } else {
+          setModalContent(
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <QRCode value="https://t.me/VERONATRENTOBOT" icon={logo} />
+              <Button
+                type="primary"
+                style={{ marginTop: '10px', border: '1px solid #0088cc', display: 'flex', alignItems: 'center' }}
+                onClick={() => {
+                  window.open('https://t.me/VERONATRENTOBOT', '_blank');
+                  setModalContent(null);
+                }}
+              >
+                <i className='bx bxl-telegram' style={{ marginRight: '5px', fontSize: '24px' }}></i>
+                Apri Telegram
+              </Button>
+            </div>
+          );
+        }
+      }, 500);
+    }}
+  >
+    {isMobile ? 'Mostra Bottone' : 'Mostra QR Code'}
+  </Button>
+  <Button
+    type="default"
+    size="small"
+    onClick={() => {
+      api.destroy(key);
+      localStorage.setItem('showNotification', 'false');
+    }}
+  >
+    Non visualizzare più
+  </Button>
+</Space>
+
     );
 
     api.open({
@@ -101,7 +95,7 @@ const App: React.FC = () => {
         close();
         setIsFloatButtonEnabled(true); // Rendi il pulsante nuovamente premibile quando la notifica si chiude
       },
-      duration: 15,
+      duration: 150000,
     });
 
     setIsFloatButtonEnabled(false);
