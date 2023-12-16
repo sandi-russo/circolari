@@ -4,6 +4,7 @@ import { Img } from 'react-image';
 import logo from './assets/Logo.png';
 import _ from 'lodash';
 
+// Navbar
 type NavbarProps = {
   onSearch: (query: string) => void;
 };
